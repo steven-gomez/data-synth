@@ -1,4 +1,4 @@
 data-synth
 ==========
 
-Synthesize data for multidimensional testing visualization methods.
+Synthesize multidimensional data for testing visualization methods.
