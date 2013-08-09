@@ -34,15 +34,15 @@ def quadratic(x, coef2, coef1, coef0):
 def cubic(x, coef3, coef2, coef1, coef0):
     return (coef3*(x*x*x) + quadratic(x, coef2, coef1, coef0))
     
+# Return the evaluation of the polynomial defined by a coefficient list.
+# List coefs is organized from lower powers (x^0) to higher powers (x^k).
 def polynomial(x, coefs):
     sum = 0
-    
-    # Reverse coefs so that the index of each coefficient in the polynomial
-    # matches its index in the list (e.g., the constant is in position 0)
-    coefs.reverse()
-    
+
     for i in range(0, len(coefs)):
         sum += math.pow(x, i)*coefs[i]
+        if x == 3:
+            print math.pow(x,i), coefs[i]
         
     return sum
 
@@ -62,7 +62,9 @@ def get_JSON(start, end, tick, mean, stdev, coefs):
     vals = evaluate(start, end, tick, coefs)
     
     # Generate noise to add to signal
-    noise = numpy.random.normal(mean, stdev, len(vals))
+    noise = [0]*len(vals)
+    if (stdev > 0):
+        noise = numpy.random.normal(mean, stdev, len(vals))
     
     json_preamble= '"data": [\n\t{\n\t\t"name": "table",\n\t\t"values": [\n\t\t\t'
     json_postamble = '\n\n\t\t]\n\t}\n]'
@@ -139,12 +141,25 @@ def main(argv=None):
         print >> sys.stderr, "\t for help use --help"
         return 2
         
-    startX = -50
-    endX = 50
-    tickX = 5
+    
+    #poly = [0.25, 0.0, 6.0]
+    #poly = [-0.5, 0, 3]
+    #poly = [4, 5]
+    #poly = [-0.5, 10]
+    #poly = [16]
+    poly = [4]
+    
+    # Reverse coefficients in place so they are low-to-high ordered.
+    poly.reverse()
+    
+    startX = 0
+    endX = 10
+    tickX = 1
     noise_mean = 0
-    noise_stdev = 5000
-    poly = [2, 4, 8, 3]
+    #noise_stdev = 1
+    noise_stdev = math.fabs(polynomial(4, poly)/10.0)
+    
+    print 'noise stdev', polynomial(0, poly), polynomial(4, poly)
     
     print get_Vega_spec(startX, endX, tickX, noise_mean, noise_stdev, poly)
 
